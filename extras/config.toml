@@ -28,7 +28,7 @@ calendar = true
 first_day = "monday"
 # Left click always opens the calendar popup; a configurable launch button
 # sits under the calendar grid (app-id flatbar.datetime).
-calendar_launch = ["gsimplecal"]
+calendar_launch = ["calcurse"]
 # Optional right-click strftime patterns (defaults shown). Clicking copies.
 patterns = [
     { label = "Long date", format = "%A, %B %d, %Y" },
