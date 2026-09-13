@@ -1,0 +1,173 @@
+# Comprehensive Flatbar Configuration
+# Two-color Status Bar with FontAwesome Glyphs, Widgets, Popups, and Window Rules
+
+[bar]
+name = "main"
+height = 30
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+position = "top"
+output = "all"
+font_family = "sans-serif"
+font_size = 13.0
+font_fallback = ["Noto Sans", "Noto Color Emoji", "Noto Sans CJK SC"]
+inner_padding = 2
+menu_command = "fuzzel --dmenu -p flatbar"
+menu_backend = "popup"
+
+[bar.layout]
+left = ["workspaces", "custom_volume"]
+center = ["datetime"]
+right = ["notifications", "clipboard", "systray", "bluetooth", "network", "stats", "disk", "performance", "battery"]
+
+[widgets.datetime]
+type = "datetime"
+format = "%Y-%m-%d %H:%M:%S"
+interval = 1
+calendar = true
+first_day = "monday"
+# Left click always opens the calendar popup; a configurable launch button
+# sits under the calendar grid (app-id flatbar.datetime).
+calendar_launch = ["gsimplecal"]
+# Optional right-click strftime patterns (defaults shown). Clicking copies.
+patterns = [
+    { label = "Long date", format = "%A, %B %d, %Y" },
+    { label = "Short date", format = "%a %b %d, %Y" },
+    { label = "Year first", format = "%Y%m%d" },
+    { label = "Year first with separators", format = "%Y/%m/%d" },
+    { label = "Standard international", format = "%d/%m/%Y" },
+    { label = "American", format = "%m/%d/%Y" },
+    { label = "UTC 24hr", format = "%H:%M UTC" },
+    { label = "UTC 12hr", format = "%I:%M %p UTC" },
+    { label = "Local 24hr", format = "%H:%M" },
+    { label = "Local 12hr", format = "%I:%M %p" },
+    { label = "Local TZ 24hr", format = "%H:%M %Z" },
+    { label = "Local TZ 12hr", format = "%I:%M %p %Z" },
+]
+
+[widgets.workspaces]
+type = "workspaces"
+
+[widgets.custom_volume]
+type = "command"
+command = "pamixer --get-volume-human"
+icon = "fa-volume-high"
+interval = 2
+scroll_up = "pamixer -i 5"
+scroll_down = "pamixer -d 5"
+left_click = "pavucontrol"
+# right_click = "pamixer -t"       # shell command on right click
+# middle_click = "pavucontrol"     # shell command on middle click
+# Volume-band icons (issue 15) and right-click mute (issue 16)
+icon_muted = "fa-volume-xmark"
+icon_low = "fa-volume-low"
+icon_mid = "fa-volume-high"
+icon_high = "fa-volume-high"
+mute_command = "pamixer -t"
+
+[widgets.bluetooth]
+type = "bluetooth"
+interval = 5
+format = "{icon}"
+icon_off = "fa-bluetooth"
+icon_on = "fa-bluetooth"
+icon_connected = "fa-bluetooth-b"
+emphasis_on_connected = true
+# Command for the "Manage Devices" menu entry. Default "bluetui" (not shipped —
+# install it yourself or set another device manager); resolved next to the
+# flatbar binary, then via PATH.
+# manage_command = "bluetui"
+# menu_backend = "popup"    # "popup" (xdg popup) or "launcher" (fuzzel dmenu)
+
+[widgets.systray]
+type = "systray"
+summary_icon = "fa-chevron-right"
+attention_icon = "fa-chevron-down"
+hidden = ["slack", "discord"]
+only = []
+icon_size = 16
+# Tray updates are signal-driven (NewIcon/NewStatus/... + NameOwnerChanged).
+# This is a slow safety-net poll for tray apps that emit no signals;
+# 0 = event-driven only.
+tray_poll_fallback_secs = 10
+# menu_backend = "popup"    # "popup" (xdg popup) or "launcher" (fuzzel dmenu)
+
+[widgets.network]
+type = "network"
+interval = 3
+# interface = "wlp13s0"    # pin a specific interface (machine-specific);
+#   otherwise auto-detect prefers the default-gateway interface, then
+#   ethernet, then wireless.
+# Device name on the bar (default false — glyph only; the device + IP are
+# always in the left-click menu, where every row copies its IP).
+# show_device = true
+# The "External:" menu row shows the machine's public IP via curl (cached
+# 5 minutes, refreshed in the background). Set public_ip = false to show the
+# default-route interface's local IP instead.
+# public_ip = true
+# public_ip_url = "https://icanhazip.com"
+
+# Wi-Fi variant with signal-strength tiering from /proc/net/wireless.
+# [widgets.wifi]
+# type = "wifi"
+# interval = 5
+# interface = "wlp13s0"
+# show_device = true
+# menu_backend = "popup"    # "popup" (xdg popup) or "launcher" (fuzzel dmenu)
+
+[widgets.stats]
+type = "stats"
+interval = 2
+cpu = true
+ram = true
+temp = true
+
+# Storage: drive icon on the bar; left-click opens a menu listing the
+# configured mount points with used/total/free sizes.
+[widgets.disk]
+type = "disk"
+mounts = ["/"]
+interval = 30
+warn_above = 90
+# Unit system for menu sizes: "auto" (largest binary unit per value, default)
+# or a forced unit: "MB", "GB", "TB", "MiB", "GiB", "TiB".
+units = "auto"
+# File manager command launched on right-click (default "rc" — rat-commander).
+# Left-click still opens the storage menu. Requires the binary on PATH.
+# file_manager = "rc"
+
+# Power-profiles-daemon indicator: left-click cycles
+# power-saver -> balanced -> performance. Icons per mode are configurable.
+# Hides automatically when power-profiles-daemon is unavailable.
+[widgets.performance]
+type = "performance"
+interval = 5
+icon_powersaver = "fa-leaf"
+icon_balanced = "fa-scale-balanced"
+icon_performance = "fa-rocket"
+
+[widgets.battery]
+type = "battery"
+interval = 5
+low_below = 20
+# assume_ac = true         # synthetic plug state when no power supplies exist
+
+# Clipboard history viewer (issues 13/14): polls `wl-paste -n`, keeps the last
+# 10 entries on disk. Requires the wl-clipboard package.
+[widgets.clipboard]
+type = "clipboard"
+# Icon alias (or raw codepoint) shown on the bar.
+icon = "fa-clipboard"
+
+# Notification viewer (issue 12): reads `makoctl history`/`makoctl dismiss`.
+# Requires the mako notifcation daemon (flatbar never owns the dbus protocol).
+[widgets.notifications]
+type = "notifications"
+interval = 5
+
+[window_rules]
+terminal = "foot"
+"flatbar.bluetooth" = { size = "800x600", mode = "floating" }
+"flatbar.network"   = { size = "900x700", mode = "floating" }
+"flatbar.stats"     = { mode = "tiling" }
+"flatbar.datetime"  = { mode = "floating" }

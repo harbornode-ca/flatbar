@@ -1,0 +1,11 @@
+[package]
+name = "flatbar"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight, customizable, two-color Wayland status bar"
+
+[dependencies]
+flatbar-core = { path = "../flatbar-core" }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
